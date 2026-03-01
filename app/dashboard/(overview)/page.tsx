@@ -9,6 +9,8 @@ import {
   CardsSkeleton,
 } from "@/app/ui/skeletons";
 
+// another sample new code
+
 export default async function Page() {
   return (
     <main>
