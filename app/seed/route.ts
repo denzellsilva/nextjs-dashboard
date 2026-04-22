@@ -11,7 +11,9 @@ async function seedUsers() {
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       email TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL
+      password TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `;
 
@@ -38,15 +40,16 @@ async function seedInvoices() {
       customer_id UUID NOT NULL,
       amount INT NOT NULL,
       status VARCHAR(255) NOT NULL,
-      date DATE NOT NULL
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `;
 
   const insertedInvoices = await Promise.all(
     invoices.map(
       (invoice) => sql`
-        INSERT INTO invoices (customer_id, amount, status, date)
-        VALUES (${invoice.customer_id}, ${invoice.amount}, ${invoice.status}, ${invoice.date})
+        INSERT INTO invoices (customer_id, amount, status, created_at, updated_at)
+        VALUES (${invoice.customer_id}, ${invoice.amount}, ${invoice.status}, ${invoice.created_at}, ${invoice.created_at})
         ON CONFLICT (id) DO NOTHING;
       `
     )
@@ -63,7 +66,9 @@ async function seedCustomers() {
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL,
-      image_url VARCHAR(255) NOT NULL
+      image_url VARCHAR(255) NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `;
 
@@ -84,7 +89,9 @@ async function seedRevenue() {
   await sql`
     CREATE TABLE IF NOT EXISTS revenue (
       month VARCHAR(4) NOT NULL UNIQUE,
-      revenue INT NOT NULL
+      revenue INT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `;
 

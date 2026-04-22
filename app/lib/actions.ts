@@ -22,11 +22,10 @@ const FormSchema = z.object({
   status: z.enum(["pending", "paid"], {
     invalid_type_error: "Please select an invoice status.",
   }),
-  date: z.string(),
 });
 
-const CreateInvoice = FormSchema.omit({ id: true, date: true });
-const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+const CreateInvoice = FormSchema.omit({ id: true });
+const UpdateInvoice = FormSchema.omit({ id: true });
 
 export type State = {
   errors?: {
@@ -56,12 +55,12 @@ export async function createInvoice(prevState: State, formData: FormData) {
   const { customerId, amount, status } = validatedFields.data;
 
   const amountInCents = amount * 100;
-  const date = new Date().toISOString().split("T")[0];
+  const createdAt = new Date().toISOString();
 
   try {
     await sql`
-      INSERT INTO invoices (customer_id, amount, status, date)
-      VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
+      INSERT INTO invoices (customer_id, amount, status, created_at, updated_at)
+      VALUES (${customerId}, ${amountInCents}, ${status}, ${createdAt}, ${createdAt})
     `;
   } catch (error) {
     console.error(error);
@@ -98,7 +97,7 @@ export async function updateInvoice(
   try {
     await sql`
       UPDATE invoices
-      SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+      SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}, updated_at = NOW()
       WHERE id = ${id}
     `;
   } catch (error) {
